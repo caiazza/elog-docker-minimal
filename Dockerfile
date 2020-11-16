@@ -16,8 +16,14 @@ RUN git clone https://bitbucket.org/ritt/elog --recursive && \
     
 FROM elog-build AS elog-configure
 WORKDIR /usr/local/elog
+
+# Adding users and config files from build folder
+COPY ./elogd.cfg elogd.cfg
+
 RUN adduser -S -g elog elog && \
-    addgroup -S elog
+    addgroup -S elog && \
+    chown elog:elog elogd.cfg && \
+    chown -R elog:elog logbooks
 
 EXPOSE 8080
-CMD ["elogd", "-p", "8080"]
+CMD ["elogd", "-p", "8080", "-c", "elogd.cfg"]
